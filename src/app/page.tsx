@@ -1,13 +1,13 @@
-export default function Home() {
+// src/pages/index.tsx
+import Counter from "./components/counter";
+
+const Home = () => {
   return (
-    <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-      Hello World
-      <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-        {/* You can put additional content here */}
-        <button className="btn btn-primary">One</button>
-        <button className="btn btn-secondary">Two</button>
-        <button className="btn btn-accent btn-outline">Three</button>
-      </div>
+    <div className="container mx-auto p-4">
+      <h1 className="text-4xl font-bold mb-4">Welcome to the Counter App</h1>
+      <Counter />
     </div>
   );
-}
+};
+
+export default Home;
