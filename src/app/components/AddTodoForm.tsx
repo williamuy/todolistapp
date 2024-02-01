@@ -5,13 +5,15 @@ import { useTodoStore } from "../store/todoStore";
 
 const AddTodoForm = () => {
   const [task, setTask] = useState("");
+  const [urgency, setUrgency] = useState<"Low" | "Medium" | "High">("Low");
   const addTodo = useTodoStore((state) => state.addTodo);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (task.trim() !== "") {
-      addTodo(task);
+      addTodo(task, urgency);
       setTask("");
+      setUrgency("Low"); // Reset to default after adding
     }
   };
 
@@ -24,6 +26,17 @@ const AddTodoForm = () => {
         onChange={(e) => setTask(e.target.value)}
         placeholder="Enter a new task"
       />
+      <select
+        className="select select-bordered w-full max-w-xs mt-2"
+        value={urgency}
+        onChange={(e) =>
+          setUrgency(e.target.value as "Low" | "Medium" | "High")
+        }
+      >
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+      </select>
       <button type="submit" className="btn btn-primary mt-2">
         Add Todo
       </button>
