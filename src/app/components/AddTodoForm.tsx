@@ -1,15 +1,21 @@
 "use client";
+// Import necessary modules
 import React, { useState } from "react";
 import { useTodoStore } from "../store/todoStore";
 
+// Define the AddTodoForm component
 const AddTodoForm = () => {
+  // Define state variables for the task, urgency, and due date
   const [task, setTask] = useState("");
   const [urgency, setUrgency] = useState<"Low" | "Medium" | "High">("Low");
   const [dueDate, setDueDate] = useState(
     new Date().toISOString().split("T")[0],
   );
+
+  // Get the addTodo function from the todo store
   const addTodo = useTodoStore((state) => state.addTodo);
 
+  // Define the handleSubmit function, which is called when the form is submitted
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (task.trim() !== "") {
@@ -20,6 +26,7 @@ const AddTodoForm = () => {
     }
   };
 
+  // Render the form
   return (
     <form onSubmit={handleSubmit} className="form-control">
       <input
@@ -53,4 +60,5 @@ const AddTodoForm = () => {
   );
 };
 
+// Export the AddTodoForm component
 export default AddTodoForm;

@@ -1,7 +1,9 @@
+// Import necessary modules
 "use client";
 import React, { useState } from "react";
 import { useTodoStore } from "../store/todoStore";
 
+// Define the props for the TodoItem component
 interface TodoItemProps {
   id: number;
   task: string;
@@ -10,6 +12,7 @@ interface TodoItemProps {
   dueDate: string;
 }
 
+// Define the TodoItem component
 const TodoItem: React.FC<TodoItemProps> = ({
   id,
   task,
@@ -17,6 +20,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   urgency,
   dueDate,
 }) => {
+  // Get the necessary functions from the todo store
   const { toggleCompletion, updateTodo, deleteTodo } = useTodoStore(
     (state) => ({
       toggleCompletion: state.toggleCompletion,
@@ -25,11 +29,13 @@ const TodoItem: React.FC<TodoItemProps> = ({
     }),
   );
 
+  // Define state variables for editing the todo item
   const [isEditing, setIsEditing] = useState(false);
   const [editedTask, setEditedTask] = useState(task);
   const [editedUrgency, setEditedUrgency] = useState(urgency);
   const [editedDueDate, setEditedDueDate] = useState(dueDate);
 
+  // Define the saveEdits function, which is called when the user saves their edits
   const saveEdits = () => {
     if (!editedTask.trim() || !editedDueDate) {
       alert("Task and Due Date cannot be empty.");
@@ -43,12 +49,14 @@ const TodoItem: React.FC<TodoItemProps> = ({
     setIsEditing(false);
   };
 
+  // Define the class for the urgency indicator based on the urgency level
   const urgencyIndicatorClass = {
     Low: "bg-green-500",
     Medium: "bg-yellow-500",
     High: "bg-red-500",
   }[urgency];
 
+  // Render the todo item
   return (
     <div className="card shadow-xl relative">
       <span
@@ -63,6 +71,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
           className="checkbox checkbox-primary mr-2"
         />
         {isEditing ? (
+          // If the item is being edited, render the edit form
           <>
             <input
               className="input input-bordered"
@@ -97,6 +106,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
             </button>
           </>
         ) : (
+          // If the item is not being edited, render the item details
           <>
             <h2 className={`card-title ${completed ? "line-through" : ""}`}>
               {task}
@@ -120,8 +130,10 @@ const TodoItem: React.FC<TodoItemProps> = ({
   );
 };
 
+// Export the TodoItem component
 export default TodoItem;
 
+// Define a helper function to format a date without the timezone
 function formatDateWithoutTimezone(dateString: string | number | Date) {
   const date = new Date(dateString);
   const year = date.getUTCFullYear();
