@@ -1,32 +1,50 @@
-// src/components/TodoItem.tsx
 "use client";
-// src/components/TodoItem.tsx
-// src/components/TodoItem.tsx
 import React from "react";
+import { useTodoStore } from "../store/todoStore";
 
 interface TodoItemProps {
+  id: number;
   task: string;
+  completed: boolean;
   urgency: "Low" | "Medium" | "High";
+  dueDate: string;
 }
 
-const TodoItem: React.FC<TodoItemProps> = ({ task, urgency }) => {
-  // Define color classes for each urgency level
-  const urgencyColorClass = {
-    Low: "bg-green-400", // Green box for low urgency
-    Medium: "bg-yellow-400", // Yellow box for medium urgency
-    High: "bg-red-400", // Red box for high urgency
-  };
+const TodoItem: React.FC<TodoItemProps> = ({
+  id,
+  task,
+  completed,
+  urgency,
+  dueDate,
+}) => {
+  const toggleCompletion = useTodoStore((state) => state.toggleCompletion);
+
+  const urgencyIndicatorClass = {
+    Low: "bg-green-500", // Green bubble for low urgency
+    Medium: "bg-yellow-500", // Yellow bubble for medium urgency
+    High: "bg-red-500", // Red bubble for high urgency
+  }[urgency];
 
   return (
-    <div className="card shadow-xl">
+    <div className="card shadow-xl relative">
+      {/* Urgency indicator bubble */}
+      <span
+        className={`absolute top-3 right-3 h-5 w-5 ${urgencyIndicatorClass} rounded-full m-2`}
+        aria-hidden="true"
+      ></span>
+
       <div className="card-body">
-        {/* Small colored box for urgency indicator */}
-        <span
-          className={`inline-block w-3 h-3 mr-2 rounded-full ${urgencyColorClass[urgency]}`}
-          aria-hidden="true"
-        ></span>
-        <h2 className="card-title">{task}</h2>
-        <p>Urgency: {urgency}</p> {/* Display urgency text */}
+        <input
+          type="checkbox"
+          checked={completed}
+          onChange={() => toggleCompletion(id)}
+          className="checkbox checkbox-primary mr-2"
+        />
+        <h2 className={`card-title ${completed ? "line-through" : ""}`}>
+          {task}
+        </h2>
+        <p>Due: {new Date(dueDate).toLocaleDateString()}</p>
+        {urgency}
         <button className="btn btn-primary">Edit</button>
       </div>
     </div>
