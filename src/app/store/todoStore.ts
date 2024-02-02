@@ -16,6 +16,8 @@ interface TodoState {
     dueDate: string,
   ) => void;
   toggleCompletion: (id: number) => void;
+  deleteTodo: (id: number) => void;
+  updateTodo: (id: number, updatedFields: Partial<Todo>) => void;
 }
 
 export const useTodoStore = create<TodoState>((set) => ({
@@ -37,6 +39,16 @@ export const useTodoStore = create<TodoState>((set) => ({
     set((state) => ({
       todos: state.todos.map((todo) =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+      ),
+    })),
+  deleteTodo: (id) =>
+    set((state) => ({
+      todos: state.todos.filter((todo) => todo.id !== id),
+    })),
+  updateTodo: (id, updatedFields) =>
+    set((state) => ({
+      todos: state.todos.map((todo) =>
+        todo.id === id ? { ...todo, ...updatedFields } : todo,
       ),
     })),
 }));
