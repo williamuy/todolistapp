@@ -1,15 +1,21 @@
-"use client";
-import { useTodoStore } from "../store/todoStore"; // Assuming you have a Zustand store for todos
-// src/components/TodoList.tsx
+"use client"; // src/components/TodoList.tsx
+import { useTodoStore } from "../store/todoStore";
 import TodoItem from "./TodoItem";
 
 const TodoList = () => {
-  const { todos } = useTodoStore();
+  const todos = useTodoStore((state) => state.todos);
 
   return (
     <div>
       {todos.map((todo) => (
-        <TodoItem key={todo.id} task={todo.task} urgency={todo.urgency} />
+        <TodoItem
+          key={todo.id}
+          id={todo.id}
+          task={todo.task}
+          completed={todo.completed}
+          urgency={todo.urgency}
+          dueDate={todo.dueDate}
+        />
       ))}
     </div>
   );

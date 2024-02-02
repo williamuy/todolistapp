@@ -1,4 +1,3 @@
-// src/components/AddTodoForm.tsx
 "use client";
 import React, { useState } from "react";
 import { useTodoStore } from "../store/todoStore";
@@ -6,14 +5,18 @@ import { useTodoStore } from "../store/todoStore";
 const AddTodoForm = () => {
   const [task, setTask] = useState("");
   const [urgency, setUrgency] = useState<"Low" | "Medium" | "High">("Low");
+  const [dueDate, setDueDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
   const addTodo = useTodoStore((state) => state.addTodo);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (task.trim() !== "") {
-      addTodo(task, urgency);
+      addTodo(task, urgency, dueDate);
       setTask("");
       setUrgency("Low"); // Reset to default after adding
+      setDueDate(new Date().toISOString().split("T")[0]); // Reset due date to today
     }
   };
 
@@ -37,6 +40,12 @@ const AddTodoForm = () => {
         <option value="Medium">Medium</option>
         <option value="High">High</option>
       </select>
+      <input
+        type="date"
+        className="input input-bordered w-full max-w-xs mt-2"
+        value={dueDate}
+        onChange={(e) => setDueDate(e.target.value)}
+      />
       <button type="submit" className="btn btn-primary mt-2">
         Add Todo
       </button>
