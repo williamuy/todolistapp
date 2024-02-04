@@ -1,21 +1,15 @@
 "use client";
-import React, { useState } from "react";
+// Ensure this path matches the location of your Supabase client setup
+import React, { useEffect, useState } from "react";
+import supabase from "../supabaseClient";
 
 type Todo = {
   id: number;
   text: string;
   urgency: "low" | "medium" | "high";
-  dueDate: string; // ISO string format
+  due_date: string;
   completed: boolean;
 };
-
-function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  const year = date.getUTCFullYear();
-  const month = ("0" + (date.getUTCMonth() + 1)).slice(-2);
-  const day = ("0" + (date.getUTCDate() + 1)).slice(-2); // Add 1 to the date
-  return `${year}-${month}-${day}`;
-}
 
 const TodoList: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -23,26 +17,75 @@ const TodoList: React.FC = () => {
   const [dueDate, setDueDate] = useState("");
   const [urgency, setUrgency] = useState<"low" | "medium" | "high">("medium");
 
-  const addTodo = () => {
-    if (!todoInput.trim() || !dueDate.trim()) return;
+  useEffect(() => {
+    const fetchTodos = async () => {
+      const { data, error } = await supabase
+        .from("todos")
+        .select("*")
+        .order("id", { ascending: false });
 
-    const newTodo: Todo = {
-      id: Date.now(),
-      text: todoInput,
-      urgency: urgency,
-      dueDate: formatDate(dueDate), // Format the due date
-      completed: false,
+      if (error) {
+        console.error("Error fetching todos:", error);
+        return;
+      }
+
+      setTodos(data);
     };
-    setTodos([...todos, newTodo]);
+
+    fetchTodos();
+  }, []);
+
+  const addTodo = async () => {
+    if (!todoInput.trim() || !dueDate) {
+      console.log("Required fields are missing");
+      return;
+    }
+
+    const { data: insertedData, error: insertError } = await supabase
+      .from("todos")
+      .insert([
+        {
+          text: todoInput,
+          urgency,
+          due_date: dueDate,
+          completed: false,
+        },
+      ]);
+
+    if (insertError) {
+      console.error("Error inserting todo:", insertError);
+      return;
+    }
+
+    if (insertedData && insertedData.length > 0) {
+      console.log("Inserted data:", insertedData);
+      setTodos((currentTodos) => [...currentTodos, ...insertedData]);
+    } else {
+      console.error(
+        "Unexpected response structure from Supabase insert:",
+        insertedData,
+      );
+    }
+
     setTodoInput("");
     setDueDate("");
-    setUrgency("medium"); // Reset to default or keep as last selected
+    setUrgency("medium");
   };
 
-  const toggleCompleted = (id: number) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+  const toggleCompleted = async (id: number, completed: boolean) => {
+    const { error } = await supabase
+      .from("todos")
+      .update({ completed: !completed })
+      .match({ id });
+
+    if (error) {
+      console.error("Error toggling completion:", error);
+      return;
+    }
+
+    setTodos((currentTodos) =>
+      currentTodos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !completed } : todo,
       ),
     );
   };
@@ -53,8 +96,8 @@ const TodoList: React.FC = () => {
         type="text"
         value={todoInput}
         onChange={(e) => setTodoInput(e.target.value)}
-        className="input input-bordered input-primary w-full max-w-xs"
         placeholder="Add a new todo"
+        className="input input-bordered input-primary w-full max-w-xs"
       />
       <input
         type="date"
@@ -76,7 +119,6 @@ const TodoList: React.FC = () => {
       <button onClick={addTodo} className="btn btn-primary ml-2">
         Add Todo
       </button>
-      <div className="divider"></div>
       <ul>
         {todos.map((todo) => (
           <li
@@ -86,9 +128,12 @@ const TodoList: React.FC = () => {
             <div>
               <span>{todo.text}</span>
               <span> | Urgency: {todo.urgency}</span>
-              <span> | Due: {new Date(todo.dueDate).toLocaleDateString()}</span>
+              <span>
+                {" "}
+                | Due: {new Date(todo.due_date).toLocaleDateString()}
+              </span>
               <button
-                onClick={() => toggleCompleted(todo.id)}
+                onClick={() => toggleCompleted(todo.id, todo.completed)}
                 className={`btn btn-xs ${todo.completed ? "btn-secondary" : "btn-success"} ml-2`}
               >
                 {todo.completed ? "Completed" : "Mark as complete"}
