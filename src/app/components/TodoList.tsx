@@ -2,7 +2,7 @@
 // Ensure this path matches the location of your Supabase client setup
 import React, { useEffect, useState } from "react";
 import supabase from "../supabaseClient";
-
+//test
 type Todo = {
   id: number;
   text: string;
@@ -69,7 +69,6 @@ const TodoList: React.FC = () => {
         insertedData,
       );
     }
-
     setTodoInput("");
     setDueDate("");
     setUrgency("medium");
