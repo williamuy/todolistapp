@@ -57,9 +57,12 @@ const TodoList: React.FC = () => {
       return;
     }
 
-    if (insertedData && insertedData.length > 0) {
+    if (insertedData && (insertedData as Todo[]).length > 0) {
       console.log("Inserted data:", insertedData);
-      setTodos((currentTodos) => [...currentTodos, ...insertedData]);
+      setTodos((currentTodos) => [
+        ...currentTodos,
+        ...(insertedData as Todo[]),
+      ]);
     } else {
       console.error(
         "Unexpected response structure from Supabase insert:",
